@@ -1,18 +1,21 @@
-from openai import OpenAI
 import os
 from dotenv import load_dotenv
+from openai import AzureOpenAI  # ✅ Correct client for Azure
 
+# Load environment variables from .env
 load_dotenv()
 
-AZURE_DEPLOYMENT = "gpt-4"  # Replace with your actual deployment name
+# Load your Azure deployment name
+AZURE_DEPLOYMENT = os.getenv("AZURE_DEPLOYMENT")
 
-client = OpenAI(
+# Initialize the Azure OpenAI client
+client = AzureOpenAI(
     api_key=os.getenv("AZURE_OPENAI_KEY"),
-    base_url=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    default_headers={"api-key": os.getenv("AZURE_OPENAI_KEY")},
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
     api_version=os.getenv("AZURE_OPENAI_VERSION")
 )
 
+# Define the feedback function
 def get_essay_feedback(text: str) -> str:
     prompt = f"""
 You are an expert IELTS examiner and academic coach. Evaluate the following IELTS Writing Task 2 essay and provide detailed, structured feedback.
