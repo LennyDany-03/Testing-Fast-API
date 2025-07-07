@@ -4,13 +4,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+AZURE_DEPLOYMENT = "gpt-4"  # Replace with your actual deployment name
+
 client = AzureOpenAI(
     api_key=os.getenv("AZURE_OPENAI_KEY"),
     api_version=os.getenv("AZURE_OPENAI_VERSION"),
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
 )
-
-AZURE_DEPLOYMENT = "gpt-4"  # Use your deployment name exactly as shown in Azure
 
 def get_essay_feedback(text: str) -> str:
     prompt = f"""
@@ -74,7 +74,7 @@ Essay:
 
     try:
         response = client.chat.completions.create(
-            model=AZURE_DEPLOYMENT,  # This is the deployment name in Azure
+            model=AZURE_DEPLOYMENT,
             messages=[
                 {"role": "system", "content": "You are an IELTS examiner evaluating a Writing Task 2 essay."},
                 {"role": "user", "content": prompt}
