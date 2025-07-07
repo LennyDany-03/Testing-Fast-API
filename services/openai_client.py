@@ -1,4 +1,4 @@
-from openai import AzureOpenAI
+from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
@@ -6,10 +6,11 @@ load_dotenv()
 
 AZURE_DEPLOYMENT = "gpt-4"  # Replace with your actual deployment name
 
-client = AzureOpenAI(
+client = OpenAI(
     api_key=os.getenv("AZURE_OPENAI_KEY"),
-    api_version=os.getenv("AZURE_OPENAI_VERSION"),
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    base_url=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    default_headers={"api-key": os.getenv("AZURE_OPENAI_KEY")},
+    api_version=os.getenv("AZURE_OPENAI_VERSION")
 )
 
 def get_essay_feedback(text: str) -> str:
