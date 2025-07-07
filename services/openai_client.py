@@ -1,17 +1,18 @@
-import openai
+from openai import AzureOpenAI
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-openai.api_type = "azure"
-openai.api_base = os.getenv("AZURE_OPENAI_ENDPOINT")
-openai.api_key = os.getenv("AZURE_OPENAI_KEY")
-openai.api_version = os.getenv("AZURE_OPENAI_VERSION")
+client = AzureOpenAI(
+    api_key=os.getenv("AZURE_OPENAI_KEY"),
+    api_version=os.getenv("AZURE_OPENAI_VERSION"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+)
 
-AZURE_DEPLOYMENT = "gpt-4"  # Replace with your deployment name in Azure
+AZURE_DEPLOYMENT = "gpt-4"  # Use your deployment name exactly as shown in Azure
 
-def get_essay_feedback(text: str):
+def get_essay_feedback(text: str) -> str:
     prompt = f"""
 You are an expert IELTS examiner and academic coach. Evaluate the following IELTS Writing Task 2 essay and provide detailed, structured feedback.
 
@@ -68,22 +69,19 @@ Please break your response into these sections:
     • Structure: [e.g., Cohesive devices guide]
 
 Essay:
-\"\"\"
-{text}
-\"\"\"
+\"\"\"{text}\"\"\"
 """
 
     try:
-        response = openai.ChatCompletion.create(
-            engine=AZURE_DEPLOYMENT,
+        response = client.chat.completions.create(
+            model=AZURE_DEPLOYMENT,  # This is the deployment name in Azure
             messages=[
                 {"role": "system", "content": "You are an IELTS examiner evaluating a Writing Task 2 essay."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.5,
-            max_tokens=2000,
-            response_format="text"
+            max_tokens=2000
         )
-        return response['choices'][0]['message']['content']
+        return response.choices[0].message.content
     except Exception as e:
         return f"[ERROR]: {str(e)}"
